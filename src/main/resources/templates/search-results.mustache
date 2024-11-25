@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>검색 결과</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 20px; /* 상하좌우 기본 패딩 */
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px; /* 중앙 정렬을 위한 최대 너비 */
+            margin: 0 auto; /* 가운데 정렬 */
+            padding: 0 20px; /* 양옆에 여백 추가 */
+        }
+        .sort-buttons {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .sort-buttons a {
+            margin: 0 10px;
+            padding: 10px 15px;
+            background-color: #e0e0e0;
+            color: black; /* 검정색 */
+            text-decoration: none; /* 밑줄 제거 */
+            border-radius: 5px;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+        .sort-buttons a:hover {
+            background-color: #d6d6d6;
+        }
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr); /* 한 줄에 4개 */
+            gap: 20px;
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+        .product-item {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            text-align: center;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
+        }
+        .product-name {
+            font-size: 16px;
+            font-weight: bold;
+            margin: 10px 0 5px;
+        }
+        .product-price {
+            font-size: 14px;
+            color: #555;
+        }
+        .product-description {
+            font-size: 14px;
+            color: #555;
+        }
+    </style>
+    <script>
+        // 가격에 쉼표 추가하는 함수
+        function formatPrice() {
+            const prices = document.querySelectorAll('.product-price');
+            prices.forEach(price => {
+                const value = parseFloat(price.textContent.replace('₩', '').replace(/,/g, ''));
+                if (!isNaN(value)) {
+                    price.textContent = `₩${value.toLocaleString('ko-KR')}`;
+                }
+            });
+        }
+        document.addEventListener("DOMContentLoaded", formatPrice);
+    </script>
+</head>
+<body>
+<div class="container">
+    <h1>"{{keyword}}" 검색 결과</h1>
+
+    <div class="sort-buttons">
+        <a href="/search?query={{keyword}}&sort=asc">가격 오름차순</a>
+        <a href="/search?query={{keyword}}&sort=desc">가격 내림차순</a>
+    </div>
+
+    <ul class="product-grid">
+        {{#products}}
+            <li class="product-item">
+                <a href="/product/{{id}}" style="color: black; text-decoration: none;"> <!-- 링크 스타일 적용 -->
+                    <img src="{{main_Img}}" alt="Image of {{name}}">
+                    <div>
+                        <span class="product-name">{{name}}</span>
+                        <p class="product-price">₩{{price}}</p>
+                    </div>
+                </a>
+            </li>
+        {{/products}}
+    </ul>
+</div>
+</body>
+</html>

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{product.name}}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            font-size: 2rem;
+            color: #333;
+            text-align: center;
+        }
+        .price {
+            font-size: 1.5rem;
+            color: #555;
+            margin-bottom: 20px;
+        }
+        .buttons-container {
+            display: flex;
+            gap: 20px;
+            margin-top: 10px;
+            margin-bottom: 20px;
+        }
+        .btn {
+            padding: 10px 20px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .btn-wishlist {
+            background-color: #ffcc00;
+            color: #333;
+        }
+        .btn-cart {
+            background-color: #007bff;
+            color: #fff;
+        }
+        .btn:hover {
+            opacity: 0.9;
+        }
+        .images-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .images-container img {
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            max-width: 300px;
+            height: auto;
+        }
+        .no-images {
+            font-size: 1rem;
+            color: #999;
+            text-align: center;
+            margin-top: 10px;
+        }
+        a {
+            text-decoration: none;
+            color: #007bff;
+            font-size: 1rem;
+            margin-top: 20px;
+        }
+        a:hover {
+            text-decoration: underline;
+            color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+<h1>{{product.name}}</h1>
+<p class="price">₩{{product.price}}</p>
+
+<div class="buttons-container">
+    <button class="btn btn-wishlist" onclick="handleAction('wishlist', {{product.id}})">위시리스트 추가</button>
+    <button class="btn btn-cart" onclick="handleAction('cart', {{product.id}})">장바구니 추가</button>
+</div>
+
+<div class="images-container">
+    {{#images}}
+        <img src="{{.}}" alt="Product image">
+    {{/images}}
+
+    {{^images}}
+        <p class="no-images">사진이 없습니다.</p>
+    {{/images}}
+</div>
+
+<a href="javascript:history.back()">← 돌아가기</a>
+
+<script>
+    async function handleAction(action, productId) {
+        const actionText = action === 'wishlist' ? '위시리스트' : '장바구니';
+
+        // 로그인 상태 확인
+        const isLoggedIn = await checkLoginStatus();
+        if (!isLoggedIn) {
+            if (confirm("로그인이 필요합니다. 로그인하시겠습니까?")) {
+                window.location.href = "/login";
+                return;
+            } else {
+                return; // 로그인 거부 시 종료
+            }
+        }
+
+        // 로그인 상태면 서버에 제품 추가 요청
+        const response = await fetch(`/api/${action}/add`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ productId })
+        });
+
+        if (response.ok) {
+            const userResponse = confirm(`${actionText}에 추가되었습니다. 이동하시겠습니까?`);
+            if (userResponse) {
+                const redirectUrl = action === 'wishlist' ? '/wishlist' : '/cart';
+                window.location.href = redirectUrl;
+            }
+        } else {
+            alert(`${actionText} 추가에 실패했습니다. 다시 시도해주세요.`);
+        }
+    }
+
+    async function checkLoginStatus() {
+        try {
+            const response = await fetch("/api/check-login-status", { method: "GET" });
+            if (response.ok) {
+                const data = await response.json();
+                return data.loggedIn;
+            }
+        } catch (error) {
+            console.error("Error checking login status:", error);
+        }
+        return false; // 로그인 상태가 확인되지 않으면 false 반환
+    }
+</script>
+</body>
+</html>
