@@ -1,4 +1,5 @@
 package com.shopping.site
+
 import jakarta.persistence.*
 import java.math.BigDecimal
 
@@ -15,13 +16,16 @@ data class Product(
     @Column(nullable = false)
     val price: BigDecimal = BigDecimal.ZERO,
 
-    @OneToMany(mappedBy = "product", cascade = [CascadeType.ALL], orphanRemoval = true)
-    val images: List<ProductImage> = mutableListOf()
+    @Column(nullable = false,name = "Main_Img")
+    val mainImg: String = "",
+
+    @Column(nullable = false, columnDefinition = "TEXT",name = "Detail_Imgs")
+    val images: String = "[]"
 ) {
     constructor() : this(
         id = 0,
         name = "",
         price = BigDecimal.ZERO,
-        images = mutableListOf()
+        images = "[]"
     )
 }

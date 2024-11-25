@@ -22,7 +22,8 @@ interface ProductRepository : JpaRepository<Product, Long> {
     @Query("SELECT p FROM Product p WHERE p.id = :id")
     fun searchById(@Param("id") id: Long): Product?
 
-    // 이미지 URL 조회
-    @Query("SELECT pi.imageUrl FROM ProductImage pi WHERE pi.product.id = :id")
-    fun findByIdWithImageUrl(@Param("id") id: Long): List<String>
+    // JSON으로 저장된 이미지 URL 목록 반환
+    @Query("SELECT p.images FROM Product p WHERE p.id = :id")
+    fun findImagesByProductId(@Param("id") id: Long): String
+
 }

@@ -4,7 +4,7 @@ import jakarta.persistence.*
 import jakarta.persistence.*
 
 @Entity
-@Table(name = "\"user\"")
+@Table(name = "Users")
 data class User(
     @Id
     @Column(name = "email", nullable = false, unique = true)
