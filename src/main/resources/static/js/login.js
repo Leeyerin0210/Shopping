@@ -44,20 +44,15 @@ document.addEventListener("DOMContentLoaded", () => {
     // 로그인 폼 전송
     const signinForm = document.getElementById("signinForm");
     signinForm.addEventListener("submit", async (e) => {
-        e.preventDefault(); // 기본 폼 제출 동작 방지
+        e.preventDefault();
         const formData = new FormData(signinForm);
-
-        // 폼 데이터 확인
-        console.log("Sign In Form Data:");
-        for (let [key, value] of formData.entries()) {
-            console.log(`${key}: ${value}`);
-        }
 
         try {
             const response = await fetch("/login", {
                 method: "POST",
                 body: formData
             });
+
             if (response.ok) {
                 alert("Sign in successful!");
                 location.href = "/main";
@@ -67,6 +62,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         } catch (error) {
             console.error("Sign in error:", error);
+            alert("An error occurred while signing in. Please try again later.");
         }
     });
 });

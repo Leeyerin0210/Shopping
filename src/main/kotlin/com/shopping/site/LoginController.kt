@@ -17,7 +17,13 @@ class LoginController(
 ) {
 
     @GetMapping("/login")
-    fun showLoginPage(model: Model): String {
+    fun showLoginPage(
+        @RequestParam(required = false) error: Boolean?,
+        model: Model
+    ): String {
+        if (error == true) {
+            model.addAttribute("errorMessage", "Invalid email or password.")
+        }
         model.addAttribute("title", "Login or Sign Up")
         return "login"
     }
@@ -40,22 +46,24 @@ class LoginController(
     }
 
     @PostMapping("/login")
+    @ResponseBody // JSON 응답을 반환
     fun loginUser(
         @RequestParam email: String,
         @RequestParam password: String,
         request: HttpServletRequest
-    ): String {
+    ): ResponseEntity<String> {
         val user = userRepository.findByEmail(email)
-            ?: return "redirect:/login?error=true"
+            ?: return ResponseEntity.badRequest().body("User not found")
 
-        if (user.password == password) { // 실제로는 비밀번호 해시 검증 필요
+        return if (password==user.password) { // 비밀번호 검증
             val session: HttpSession = request.session
             session.setAttribute("userEmail", email) // 세션에 사용자 이메일 저장
-            return "redirect:/main"
+            ResponseEntity.ok("Login successful")
+        } else {
+            ResponseEntity.badRequest().body("Invalid password")
         }
-
-        return "redirect:/login?error=true"
     }
+
 
     @GetMapping("/logout")
     fun logoutUser(request: HttpServletRequest): String {
