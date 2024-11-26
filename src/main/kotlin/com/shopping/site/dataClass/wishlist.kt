@@ -1,4 +1,4 @@
-package com.shopping.site
+package com.shopping.site.dataClass
 
 
 import jakarta.persistence.*

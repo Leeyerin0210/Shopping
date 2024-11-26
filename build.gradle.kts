@@ -31,6 +31,7 @@ dependencies {
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 	implementation(kotlin("stdlib-jdk8"))
 	implementation ("org.springframework.boot:spring-boot-starter-mustache")
+	implementation ("org.springframework.boot:spring-boot-starter-validation")
 	implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
 }
 

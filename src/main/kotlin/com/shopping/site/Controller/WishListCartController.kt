@@ -1,5 +1,7 @@
-package com.shopping.site
+package com.shopping.site.Controller
 
+import com.shopping.site.Service.CartService
+import com.shopping.site.Service.WishlistService
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*

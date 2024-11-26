@@ -1,5 +1,9 @@
-package com.shopping.site
+package com.shopping.site.Service
 
+import com.shopping.site.dataClass.Cart
+import com.shopping.site.repository.CartRepository
+import com.shopping.site.repository.ProductRepository
+import com.shopping.site.repository.UserRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 

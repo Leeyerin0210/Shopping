@@ -1,5 +1,7 @@
-package com.shopping.site
+package com.shopping.site.Controller
 
+import com.shopping.site.Service.UserService
+import com.shopping.site.repository.UserRepository
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpSession
 import org.springframework.http.ResponseEntity
@@ -28,22 +30,6 @@ class LoginController(
         return "login"
     }
 
-    @PostMapping("/signup")
-    @ResponseBody
-    fun registerUser(
-        @RequestParam username: String,
-        @RequestParam email: String,
-        @RequestParam password: String
-    ): ResponseEntity<String> {
-        println("Received signup data - Username: $username, Email: $email, Password: $password")
-        return try {
-            userService.register(username, email, password)
-            ResponseEntity.ok("User registered successfully!")
-        } catch (e: IllegalArgumentException) {
-            println("Error during registration: ${e.message}")
-            ResponseEntity.badRequest().body(e.message)
-        }
-    }
 
     @PostMapping("/login")
     @ResponseBody // JSON 응답을 반환

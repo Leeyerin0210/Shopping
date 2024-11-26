@@ -1,7 +1,6 @@
-package com.shopping.site
+package com.shopping.site.dataClass
 import jakarta.persistence.*
 
-import jakarta.persistence.*
 
 @Entity
 @Table(name = "Users")

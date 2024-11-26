@@ -1,4 +1,4 @@
-package com.shopping.site
+package com.shopping.site.Controller
 
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.web.bind.annotation.GetMapping

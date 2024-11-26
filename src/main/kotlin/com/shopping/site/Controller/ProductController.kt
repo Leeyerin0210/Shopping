@@ -1,4 +1,4 @@
-package com.shopping.site
+package com.shopping.site.Controller
 
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestParam
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import com.shopping.site.repository.ProductRepository
 
 @Controller
 class ProductController(private val productRepository: ProductRepository) {

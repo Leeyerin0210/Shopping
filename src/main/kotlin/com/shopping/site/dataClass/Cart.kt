@@ -1,4 +1,4 @@
-package com.shopping.site
+package com.shopping.site.dataClass
 
 import jakarta.persistence.*
 
@@ -10,7 +10,7 @@ data class Cart(
     val id: Long = 0,
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "email", nullable = false)
     val user: User,
 
     @ManyToOne(fetch = FetchType.LAZY)

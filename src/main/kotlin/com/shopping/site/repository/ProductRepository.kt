@@ -1,5 +1,6 @@
-package com.shopping.site
+package com.shopping.site.repository
 
+import com.shopping.site.dataClass.Product
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.CrudRepository

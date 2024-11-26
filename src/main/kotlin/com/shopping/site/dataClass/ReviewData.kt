@@ -1,4 +1,4 @@
-package com.shopping.site
+package com.shopping.site.dataClass
 
 import jakarta.persistence.*
 
@@ -12,7 +12,7 @@ data class ReviewData(
     @Column(nullable = false, columnDefinition = "TEXT")
     val review: String = "",
 
-    @Column(name = "user_name", length = 50)
+    @Column(name = "name", length = 50)
     val userName: String? = null,
 
     @Column

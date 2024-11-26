@@ -1,5 +1,7 @@
-package com.shopping.site
+package com.shopping.site.Service
 
+import com.shopping.site.dataClass.User
+import com.shopping.site.repository.UserRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -15,14 +17,14 @@ class UserService(
             throw IllegalArgumentException("Email already exists.")
         }
 
-        if (userRepository.findByUsername(username) != null) {
+        if (userRepository.findByName(username) != null) {
             throw IllegalArgumentException("Username already exists.")
         }
 
         // 비밀번호 해싱 (예시: 실제로는 BCrypt 사용 권장)
         val hashedPassword = password // 실제로는 해시 처리가 필
         println("Received signup data - Username: $username, Email: $email, Password: $password")
-        val user = User(username = username, email = email, password = hashedPassword)
+        val user = User(email = email, name = username,  password = hashedPassword)
         userRepository.save(user)
     }
 
