@@ -40,13 +40,17 @@ class CartController(
 
     @PostMapping("/remove")
     fun removeItem(
-        @RequestParam productId: Long,
+        @RequestBody body: Map<String, Any>, // JSON 데이터를 매핑
         request: HttpServletRequest
     ): String {
+        val productId = body["productId"]?.toString()?.toLongOrNull() // 문자열로 변환 후 Long 변환 시도
+            ?: throw IllegalArgumentException("Missing or invalid productId") // 유효하지 않으면 예외 발생
         val userEmail = request.session.getAttribute("userEmail") as? String
             ?: return "redirect:/login"
 
+        println("Removing item for userEmail=$userEmail, productId=$productId")
         cartService.removeFromCart(userEmail, productId)
         return "redirect:/cart"
     }
+
 }
