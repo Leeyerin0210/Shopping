@@ -10,6 +10,11 @@
 </head>
 
 <body>
+{{#success}}
+    <script>
+        alert('{{success}}'); // 서버에서 전달된 success 메시지를 팝업으로 표시
+    </script>
+{{/success}}
 <section class="vh-100">
     <div class="container py-5 h-100">
         <div class="row d-flex align-items-center justify-content-center h-100">

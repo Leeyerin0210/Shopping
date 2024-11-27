@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>위시리스트</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr); /* 한 줄에 4개 */
+            gap: 20px;
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+        .product-item {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            text-align: center;
+            position: relative;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
+        }
+        .product-name {
+            font-size: 16px;
+            font-weight: bold;
+            margin: 10px 0 5px;
+        }
+        .product-price {
+            font-size: 14px;
+            color: #555;
+        }
+        .delete-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .delete-button:hover {
+            background-color: #c0392b;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>위시리스트</h1>
+
+    <ul class="product-grid">
+        {{#wishlist}}
+            <li class="product-item">
+                <button class="delete-button" onclick="deleteItem({{product.id}})">삭제</button>
+                <a href="/product/{{product.id}}" style="color: black; text-decoration: none;">
+                    <img src="{{product.mainImg}}" alt="Image of {{product.name}}">
+                    <div>
+                        <span class="product-name">{{product.name}}</span>
+                        <p class="product-price">₩{{product.price}}</p>
+                    </div>
+                </a>
+            </li>
+        {{/wishlist}}
+
+        {{^wishlist}}
+            <p>위시리스트에 제품이 없습니다.</p>
+        {{/wishlist}}
+    </ul>
+</div>
+
+<script>
+    function deleteItem(productId) {
+        fetch(`/wishlist/delete`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ productId: productId })
+        })
+                .then(response => {
+                    if (response.ok) {
+                        alert('제품이 위시리스트에서 삭제되었습니다.');
+                        window.location.reload(); // 페이지 새로고침
+                    } else {
+                        alert('삭제에 실패했습니다.');
+                    }
+                });
+    }
+</script>
+</body>
+</html>
