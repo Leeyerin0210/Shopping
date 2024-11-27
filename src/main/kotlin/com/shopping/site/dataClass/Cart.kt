@@ -1,29 +1,33 @@
 package com.shopping.site.dataClass
 
 import jakarta.persistence.*
+import java.time.LocalDateTime
 
 @Entity
-@Table(name = "CART")
+@Table(name = "cart")
 data class Cart(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long = 0,
+    val cartId: Long = 0,
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "email", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "user_email", referencedColumnName = "email", nullable = false)
     val user: User,
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "product_id", nullable = false)
     val product: Product,
 
-    @Column(nullable = false)
-    var quantity: Int = 0
-) {
+    var quantity: Int = 1,
+
+    val addedAt: LocalDateTime = LocalDateTime.now()
+)
+ {
     constructor() : this(
-        id = 0,
+        cartId = 0,
         user = User(),
         product = Product(),
-        quantity = 0
+        quantity = 0,
+        addedAt = LocalDateTime.now()
     )
 }

@@ -1,7 +1,5 @@
 package com.shopping.site.Service
 
-import com.shopping.site.dataClass.Product
-import com.shopping.site.dataClass.User
 import com.shopping.site.dataClass.Wishlist
 import com.shopping.site.repository.ProductRepository
 import com.shopping.site.repository.UserRepository

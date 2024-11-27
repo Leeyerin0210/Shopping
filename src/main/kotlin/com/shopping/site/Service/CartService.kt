@@ -1,6 +1,7 @@
 package com.shopping.site.Service
 
 import com.shopping.site.dataClass.Cart
+import com.shopping.site.dataClass.User
 import com.shopping.site.repository.CartRepository
 import com.shopping.site.repository.ProductRepository
 import com.shopping.site.repository.UserRepository
@@ -10,32 +11,39 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class CartService(
     private val cartRepository: CartRepository,
-    private val productRepository: ProductRepository,
-    private val userRepository: UserRepository
+    private val productRepository: ProductRepository
 ) {
 
     @Transactional
-    fun addToCart(userEmail: String, productId: Long, quantity: Int): String {
-        // 사용자 확인
-        val user = userRepository.findByEmail(userEmail)
-            ?: throw IllegalArgumentException("User with email $userEmail not found.")
-
-        // 제품 확인
-        val product = productRepository.findById(productId)
-            .orElseThrow { IllegalArgumentException("Product with id $productId not found.") }
-
-        // 장바구니에 이미 있는지 확인
-        val existingCartItem = cartRepository.findByUserAndProduct(user, product)
-        if (existingCartItem != null) {
-            existingCartItem.quantity += quantity
-            cartRepository.save(existingCartItem)
-            return "Updated product quantity in cart."
+    fun addToCart(userEmail: String, productId: Long, quantity: Int) {
+        val product = productRepository.findById(productId).orElseThrow {
+            IllegalArgumentException("제품을 찾을 수 없습니다.")
         }
 
-        // 장바구니에 새로 추가
-        val cartItem = Cart(user = user, product = product, quantity = quantity)
-        cartRepository.save(cartItem)
+        // 중복 확인
+        val existingCartItem = cartRepository.findByUser_EmailAndProduct_Id(userEmail, productId)
+        if (existingCartItem != null) {
+            // 수량 업데이트
+            existingCartItem.quantity += quantity
+            cartRepository.save(existingCartItem)
+        } else {
+            // 새로운 항목 추가
+            val cart = Cart(
+                user = User(email = userEmail),
+                product = product,
+                quantity = quantity
+            )
+            cartRepository.save(cart)
+        }
+    }
 
-        return "Product added to cart successfully."
+    fun getCartItems(userEmail: String): List<Cart> {
+        return cartRepository.findAllByUser_Email(userEmail)
+    }
+
+    @Transactional
+    fun removeFromCart(userEmail: String, productId: Long) {
+        val deleted = cartRepository.deleteByUser_EmailAndProduct_Id(userEmail, productId)
+        if (deleted == 0) throw IllegalArgumentException("삭제할 항목을 찾을 수 없습니다.")
     }
 }
