@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Orders</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container py-5">
+    <h1 class="mb-4">Admin Order Management</h1>
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th>Order ID</th>
+            <th>User</th>
+            <th>Status</th>
+            <th>Total Price</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{#orders}}
+            <tr>
+                <td>{{orderId}}</td>
+                <td>{{user}}</td>
+                <td>{{status}}</td>
+                <td>{{totalPrice}}</td>
+                <td>
+                    <!-- 배송 완료 버튼 -->
+                    {{#canMarkAsShipped}}
+                        <button class="btn btn-success btn-sm action-button" data-url="/admin/orders/{{orderId}}/mark-shipped">
+                            Mark as Shipped
+                        </button>
+                    {{/canMarkAsShipped}}
+
+                    <!-- 환불 승인 버튼 -->
+                    {{#canApproveRefund}}
+                        <button class="btn btn-warning btn-sm action-button" data-url="/admin/orders/{{orderId}}/approve-refund">
+                            Approve Refund
+                        </button>
+                    {{/canApproveRefund}}
+                </td>
+            </tr>
+        {{/orders}}
+        </tbody>
+    </table>
+</div>
+
+<script>
+    document.querySelectorAll('.action-button').forEach(button => {
+        button.addEventListener('click', () => {
+            const url = button.getAttribute('data-url');
+            if (url && confirm("Are you sure you want to proceed?")) {
+                fetch(url, { method: 'POST' })
+                        .then(response => response.json())
+                        .then(data => {
+                            alert(data.message || "Action completed successfully.");
+                            location.reload(); // 페이지 새로고침
+                        })
+                        .catch(error => {
+                            console.error("Error:", error);
+                            alert("An error occurred while processing the action.");
+                        });
+            }
+        });
+    });
+</script>
+</body>
+</html>

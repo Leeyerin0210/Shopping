@@ -7,6 +7,7 @@ import com.shopping.site.repository.ProductRepository
 import com.shopping.site.repository.UserRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.math.BigDecimal
 
 @Service
 class CartService(
@@ -20,14 +21,11 @@ class CartService(
             IllegalArgumentException("제품을 찾을 수 없습니다.")
         }
 
-        // 중복 확인
         val existingCartItem = cartRepository.findByUser_EmailAndProduct_Id(userEmail, productId)
         if (existingCartItem != null) {
-            // 수량 업데이트
             existingCartItem.quantity += quantity
             cartRepository.save(existingCartItem)
         } else {
-            // 새로운 항목 추가
             val cart = Cart(
                 user = User(email = userEmail),
                 product = product,
@@ -39,6 +37,22 @@ class CartService(
 
     fun getCartItems(userEmail: String): List<Cart> {
         return cartRepository.findAllByUser_Email(userEmail)
+    }
+
+    fun calculateSubtotal(cartItems: List<Cart>): BigDecimal {
+        return if (cartItems.isEmpty()) {
+            BigDecimal.ZERO
+        } else {
+            cartItems.sumOf { it.product.price * it.quantity.toBigDecimal() }
+        }
+    }
+
+    @Transactional
+    fun updateCartItemQuantity(userEmail: String, productId: Long, quantity: Int) {
+        val cartItem = cartRepository.findByUser_EmailAndProduct_Id(userEmail, productId)
+            ?: throw IllegalArgumentException("Cart item not found")
+        cartItem.quantity = quantity
+        cartRepository.save(cartItem)
     }
 
     @Transactional

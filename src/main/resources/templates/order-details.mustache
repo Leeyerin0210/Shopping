@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Details</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container py-5">
+    <h1 class="mb-4">Order Details</h1>
+    <div>
+        <strong>Order ID:</strong> {{order.orderId}} <br>
+        <strong>Date:</strong> {{order.orderDate}} <br>
+        <strong>Total Price:</strong> ${{order.totalPrice}} <br>
+        <strong>Status:</strong> {{order.status}} <br>
+    </div>
+
+    <h2 class="mt-4">Items</h2>
+    <ul class="list-group">
+        {{#items}}
+            <li class="list-group-item">
+                <strong>{{product.name}}</strong> <br>
+                Quantity: {{quantity}} <br>
+                Price: ${{price}}
+            </li>
+        {{/items}}
+        {{^items}}
+            <p class="text-center text-muted">No items found in this order.</p>
+        {{/items}}
+    </ul>
+
+    <div class="mt-4">
+        <!-- 결제 버튼 -->
+        {{#paymentUrl}}
+            <button class="btn btn-primary action-button" data-url="{{paymentUrl}}" data-action="makePayment">
+                Make Payment
+            </button>
+        {{/paymentUrl}}
+
+        <!-- 결제 취소 버튼 -->
+        {{#cancelPaymentUrl}}
+            <button class="btn btn-danger action-button" data-url="{{cancelPaymentUrl}}" data-action="cancelPayment">
+                Cancel Payment
+            </button>
+        {{/cancelPaymentUrl}}
+
+        <!-- 환불 신청 버튼 -->
+        {{#refundRequestUrl}}
+            <button class="btn btn-warning action-button" data-url="{{refundRequestUrl}}" data-action="requestRefund">
+                Request Refund
+            </button>
+        {{/refundRequestUrl}}
+
+        <!-- 기타 추가 버튼 -->
+        {{#additionalButtonUrl}}
+            <button class="btn btn-secondary action-button" data-url="{{additionalButtonUrl}}" data-action="additionalAction">
+                {{additionalButtonLabel}}
+            </button>
+        {{/additionalButtonUrl}}
+    </div>
+</div>
+
+<script>
+    // 버튼 공통 동작
+    document.querySelectorAll('.action-button').forEach(button => {
+        button.addEventListener('click', () => {
+            const url = button.getAttribute('data-url');
+            const action = button.getAttribute('data-action');
+
+            let confirmationMessage;
+            switch (action) {
+                case 'makePayment':
+                    confirmationMessage = "Are you sure you want to make the payment?";
+                    break;
+                case 'cancelPayment':
+                    confirmationMessage = "Are you sure you want to cancel the payment?";
+                    break;
+                case 'requestRefund':
+                    confirmationMessage = "Are you sure you want to request a refund?";
+                    break;
+                case 'additionalAction':
+                    confirmationMessage = "Are you sure you want to proceed?";
+                    break;
+                default:
+                    alert("Invalid action.");
+                    return;
+            }
+
+            if (url && confirm(confirmationMessage)) {
+                fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                })
+                        .then(response => response.json())
+                        .then(data => {
+                            alert(data.message || "Action completed successfully.");
+
+                            if (action === 'requestRefund' || action === 'cancelPayment') {
+                                location.href = '/orders'; // 주문 리스트 페이지로 이동
+                            } else {
+                                location.reload(); // 페이지 새로고침
+                            }
+                        })
+                        .catch(error => {
+                            console.error("Error:", error);
+                            alert("An error occurred while performing the action.");
+                        });
+            }
+        });
+    });
+</script>
+</body>
+</html>

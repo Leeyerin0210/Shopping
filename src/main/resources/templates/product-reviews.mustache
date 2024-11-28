@@ -1,0 +1,17 @@
+<h1>Reviews for {{product.name}}</h1>
+
+<ul>
+    {{#reviews}}
+        <li>
+            <strong>Rating:</strong> {{rating}}<br>
+            <strong>Review:</strong> <a href="/reviews/{{id}}/details">{{review}}</a><br>
+            <strong>By:</strong> {{user.email}}
+        </li>
+    {{/reviews}}
+    {{^reviews}}
+        <p>No reviews yet. Be the first to write a review</a>.</p>
+    {{/reviews}}
+</ul>
+
+<a href="/reviews/{{product.id}}/write">Write a Review</a>
+<a href="/products/{{product.id}}">Back to Product</a>

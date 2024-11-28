@@ -2,6 +2,7 @@ package com.shopping.site.repository
 
 import com.shopping.site.dataClass.Product
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.CrudRepository
 import org.springframework.data.repository.query.Param
@@ -27,4 +28,12 @@ interface ProductRepository : JpaRepository<Product, Long> {
     @Query("SELECT p.images FROM Product p WHERE p.id = :id")
     fun findImagesByProductId(@Param("id") id: Long): String
 
+    @Modifying
+    @Query("UPDATE Product p SET p.stock = p.stock - :quantity WHERE p.id = :productId AND p.stock >= :quantity")
+    fun reduceStock(@Param("productId") productId: Long, @Param("quantity") quantity: Int): Int
+
+    @Modifying
+    @Query("UPDATE Product p SET p.stock = p.stock + :quantity WHERE p.id = :productId")
+    fun increaseStock(@Param("productId") productId: Long, @Param("quantity") quantity: Int): Int
 }
+

@@ -20,12 +20,15 @@ data class Product(
     val mainImg: String = "",
 
     @Column(nullable = false, columnDefinition = "TEXT",name = "Detail_Imgs")
-    val images: String = "[]"
+    val images: String = "[]",
+    @Column(nullable = false)
+    var stock: Int
 ) {
     constructor() : this(
         id = 0,
         name = "",
         price = BigDecimal.ZERO,
-        images = "[]"
+        images = "[]",
+        stock = 100
     )
 }

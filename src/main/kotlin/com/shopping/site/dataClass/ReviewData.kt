@@ -12,21 +12,22 @@ data class ReviewData(
     @Column(nullable = false, columnDefinition = "TEXT")
     val review: String = "",
 
-    @Column(name = "name", length = 50)
-    val userName: String? = null,
-
     @Column
     val rating: Int = 0,
 
     @ManyToOne
     @JoinColumn(name = "product_id", nullable = false)
-    val product: Product? = null
-) {
+    val product: Product? = null,
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "email", nullable = false)
+    val user: User? = null
+)
+{
     // 기본 생성자
     constructor() : this(
         id = 0,
         review = "",
-        userName = null,
         rating = 0,
         product = null
     )

@@ -17,7 +17,8 @@ data class Order(
 
     val orderDate: LocalDateTime = LocalDateTime.now(),
     val totalPrice: BigDecimal,
-    val status: String = "Pending"
+    val status: String = "Pending",
+
 )
 {
     constructor() : this(

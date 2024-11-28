@@ -1,0 +1,25 @@
+<h1>Review Details</h1>
+
+<p><strong>Rating:</strong> {{review.rating}}</p>
+<p><strong>Review:</strong> {{review.review}}</p>
+<p><strong>By:</strong> {{review.user.email}}</p>
+
+<h2>Comments</h2>
+<ul>
+    {{#comments}}
+        <li>
+            <strong>{{user.email}}:</strong> {{content}}
+        </li>
+    {{/comments}}
+    {{^comments}}
+        <p>No comments yet. Be the first to comment below.</p>
+    {{/comments}}
+</ul>
+
+<h3>Add a Comment</h3>
+<form action="/reviews/{{review.id}}/comments" method="POST">
+    <textarea name="content" placeholder="Write your comment here..." required></textarea><br>
+    <button type="submit">Submit Comment</button>
+</form>
+
+<a href="/reviews/{{review.product.id}}">Back to Reviews</a>

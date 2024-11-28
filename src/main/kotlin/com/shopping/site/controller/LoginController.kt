@@ -16,14 +16,17 @@ class LoginController(
 
     @GetMapping("/login")
     fun showLoginPage(
-        @RequestParam(required = false) error: Boolean?,
+        @RequestParam(required = false) error: Boolean? = false,
+        request: HttpServletRequest,
         model: Model
     ): String {
         if (error == true) {
             model.addAttribute("errorMessage", "Invalid email or password.")
         }
         model.addAttribute("title", "Login or Sign Up")
-        return "login"
+
+
+        return "login" // 로그인 페이지 템플릿
     }
 
     @PostMapping("/login")
@@ -36,16 +39,20 @@ class LoginController(
         val user = userRepository.findByEmail(email)
             ?: run {
                 model.addAttribute("errorMessage", "User not found.")
-                return "login" // 다시 로그인 페이지로 이동
+                return "login"
             }
 
         return if (password == user.password) { // 비밀번호 검증
             val session: HttpSession = request.session
             session.setAttribute("userEmail", email) // 세션에 사용자 이메일 저장
-            "redirect:/main" // 메인 페이지로 리다이렉트
+
+            // 세션에 저장된 이전 URL로 리다이렉트
+            val redirectUrl = session.getAttribute("redirectAfterLogin") as? String ?: "/main"
+            session.removeAttribute("redirectAfterLogin") // 세션에서 제거
+            "redirect:$redirectUrl"
         } else {
             model.addAttribute("errorMessage", "Invalid password.")
-            "login" // 다시 로그인 페이지로 이동
+            "login"
         }
     }
 
@@ -65,3 +72,4 @@ class LoginController(
         return "mypage" // 마이페이지 템플릿
     }
 }
+
