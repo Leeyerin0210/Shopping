@@ -24,39 +24,6 @@ def setup_driver():
     driver = webdriver.Chrome(service=service, options=options)
     return driver
 
-def save_to_sql_file(product_data, filename="products.sql"):
-    """SQL 파일 생성 - 제품 데이터를 JSON으로 저장"""
-    added_products = set()
-
-    with open(filename, "w", encoding="utf-8") as file:
-        file.write("-- SQL 명령어 파일\n")
-        file.write("-- products 테이블에 데이터 삽입\n\n")
-
-        for product in product_data:
-            # 제품 중복 확인
-            if product['id'] in added_products:
-                print(f"[INFO] 이미 추가된 제품 ID: {product['id']} - {product['name']} 건너뜀.")
-                continue
-
-            # JSON 배열로 상세 이미지 데이터를 변환
-            detail_images_json = json.dumps(product['detail_images'], ensure_ascii=False)
-
-            product_insert = f"""
-INSERT INTO product (id, name, price, main_img, detail_imgs)
-VALUES (
-    {product['id']},
-    '{product['name'].replace("'", "''")}',
-    {float(product['price'].replace(",", "").replace("원", "").strip())},
-    '{product['thumbnail']}',
-    '{detail_images_json.replace("'", "''")}'
-);
-"""
-            file.write(product_insert)
-            added_products.add(product['id'])
-
-    print(f"[INFO] SQL 파일 생성 완료: {filename}")
-
-
 def extract_detail_images_selenium(driver, detail_url):
     """Selenium을 사용하여 상세 페이지에서 이미지 URL 추출"""
     print(f"[INFO] 상세 페이지로 이동 중: {detail_url}")
@@ -197,6 +164,39 @@ def search_coupang(driver, keyword):
         print(f"[ERROR] 검색 결과 크롤링 중 오류 발생: {str(e)}")
         return []
 
+def save_to_sql_file(product_data, keyword, filename="products.sql"):
+    """SQL 파일 생성 - 제품 데이터를 JSON으로 저장, category 필드 추가"""
+    added_products = set()
+
+    with open(filename, "w", encoding="utf-8") as file:
+        file.write("-- SQL 명령어 파일\n")
+        file.write("-- products 테이블에 데이터 삽입\n\n")
+
+        for product in product_data:
+            # 제품 중복 확인
+            if product['id'] in added_products:
+                print(f"[INFO] 이미 추가된 제품 ID: {product['id']} - {product['name']} 건너뜀.")
+                continue
+
+            # JSON 배열로 상세 이미지 데이터를 변환
+            detail_images_json = json.dumps(product['detail_images'], ensure_ascii=False)
+
+            product_insert = f"""
+INSERT INTO product (id, name, price, main_img, detail_imgs, category)
+VALUES (
+    {product['id']},
+    '{product['name'].replace("'", "''")}',
+    {float(product['price'].replace(",", "").replace("원", "").strip())},
+    '{product['thumbnail']}',
+    '{detail_images_json.replace("'", "''")}',
+    '{keyword.replace("'", "''")}'
+);
+"""
+            file.write(product_insert)
+            added_products.add(product['id'])
+
+    print(f"[INFO] SQL 파일 생성 완료: {filename}")
+
 
 def main():
     driver = setup_driver()
@@ -224,7 +224,7 @@ def main():
 
     # SQL 파일 생성 (이미지가 있는 제품만 포함)
     if valid_results:
-        save_to_sql_file(valid_results)
+        save_to_sql_file(valid_results, keyword)
     else:
         print("[INFO] 유효한 제품이 없어 SQL 파일을 생성하지 않습니다.")
 

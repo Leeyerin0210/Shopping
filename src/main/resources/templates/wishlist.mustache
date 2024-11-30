@@ -66,6 +66,7 @@
             background-color: #c0392b;
         }
     </style>
+    <script type="module" src="/utils/formatUtils.js"></script>
 </head>
 <body>
 <div class="container">
@@ -91,7 +92,13 @@
     </ul>
 </div>
 
-<script>
+<script type="module">
+    import { formatPricesInDocument } from '/utils/formatUtils.js';
+
+    document.addEventListener("DOMContentLoaded", () => {
+        formatPricesInDocument('.product-price');
+    });
+
     function deleteItem(productId) {
         fetch(`/wishlist/delete`, {
             method: 'POST',

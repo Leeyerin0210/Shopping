@@ -1,17 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reviews for {{product.name}}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .review-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .review-card {
+            background-color: #f5f5dc; /* 베이지색 배경 */
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .review-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .review-card h3 {
+            font-size: 1.2rem;
+            margin: 0;
+        }
+
+        .review-card .review-info {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 5px;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        .review-card p {
+            margin-top: 10px;
+            margin-bottom: 0;
+            color: #666;
+            font-size: 0.95rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 5px;
+            border: none;
+            text-decoration: none;
+            cursor: pointer;
+            font-size: 16px;
+            color: white;
+            text-align: center;
+        }
+
+        .btn-review {
+            background-color: #007bff; /* 파란색 */
+        }
+
+        .btn-review:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-product {
+            background-color: #28a745; /* 초록색 */
+        }
+
+        .btn-product:hover {
+            background-color: #1e7e34;
+        }
+    </style>
+</head>
+<body>
 <h1>Reviews for {{product.name}}</h1>
 
-<ul>
+<div class="review-container">
     {{#reviews}}
-        <li>
-            <strong>Rating:</strong> {{rating}}<br>
-            <strong>Review:</strong> <a href="/reviews/{{id}}/details">{{review}}</a><br>
-            <strong>By:</strong> {{user.email}}
-        </li>
+        <a href="/reviews/{{id}}/details" class="review-card">
+            <h3>{{title}}</h3>
+            <div class="review-info">
+                <span>By: {{user.nickname}}</span> <!-- 닉네임 표시 -->
+                <span>Rating: {{rating}} ★</span>
+            </div>
+            <p>{{review}}</p> <!-- 내용 일부 표시 -->
+        </a>
     {{/reviews}}
-    {{^reviews}}
-        <p>No reviews yet. Be the first to write a review</a>.</p>
-    {{/reviews}}
-</ul>
 
-<a href="/reviews/{{product.id}}/write">Write a Review</a>
-<a href="/products/{{product.id}}">Back to Product</a>
+    {{^reviews}}
+        <p>No reviews yet. Be the first to <a href="/reviews/{{product.id}}/write">write a review</a>.</p>
+    {{/reviews}}
+</div>
+
+<div class="button-container">
+    <a href="/reviews/{{product.id}}/write" class="btn btn-review">Write a Review</a>
+    <a href="/product/{{product.id}}" class="btn btn-product">Back to Product</a>
+</div>
+</body>
+</html>

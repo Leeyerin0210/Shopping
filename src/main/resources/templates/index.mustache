@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -7,74 +6,137 @@
     <title>My Site</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../static/css/main.css">
+    <style>
+        /* 청량하고 깔끔한 스타일 */
+        body {
+            background: #f0f8ff; /* 밝은 청색 배경 */
+            color: #004d80;
+            font-family: 'Arial', sans-serif;
+        }
+
+        /* 상단 얇은 파란색 바 */
+        .top-bar {
+            background-color: #007bff;
+            height: 8px;
+            width: 100%;
+        }
+
+        a {
+            color: #004d80;
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: #0056b3;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+        }
+
+        .category-images img {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-radius: 10px;
+        }
+
+        .category-images img:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .category-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-top: 5px;
+            color: #004d80;
+        }
+    </style>
 </head>
 <body>
 <div class="container-fluid">
+    <!-- 상단 얇은 파란색 바 -->
+    <div class="top-bar"></div>
+
     <!-- 첫 번째 행 -->
-    <div class="row align-items-center">
+    <div class="row align-items-center py-3">
         <div class="col-md-8">
-            <!-- 여기에 내용을 추가 -->
         </div>
-        <div class="col-md-3" style="text-align: right;">
+        <div class="col-md-3 text-end">
             {{#isLoggedIn}}
-                <a href="/mypage" style="text-decoration: none; color: inherit;">마이페이지</a>
+                <a href="/mypage">마이페이지</a>
             {{/isLoggedIn}}
             {{^isLoggedIn}}
-                <a href="/login" style="text-decoration: none; color: inherit;">로그인</a>
+                <a href="/login">로그인</a>
             {{/isLoggedIn}}
         </div>
-        <div class="col-md-1" style="text-align: right;">
+        <div class="col-md-1 text-end">
             {{#isLoggedIn}}
-                <a href="/logout" style="text-decoration: none; color: inherit;">로그아웃</a>
+                <a href="/logout">로그아웃</a>
             {{/isLoggedIn}}
         </div>
     </div>
 
-
     <!-- 두 번째 행 -->
     <div class="row align-items-center my-4">
-        <!-- 이미지 -->
-        <div class="col-md-4 text-right" style="display: flex; align-items: center; justify-content: right;">
+        <div class="col-md-4 text-end">
             <img src="/img/logo.png" alt="Logo" style="width: 50px; height: auto;">
         </div>
-
-        <!-- 검색 폼 -->
-        <div class="col-md-8" style="display: flex; align-items: center;">
-            <form action="/search" method="GET" style="display: flex; align-items: center; width: 100%;">
-                <input type="text" name="query" class="form-control me-2" placeholder="검색어를 입력하세요" style="max-width: 400px; margin-right: 10px;">
+        <div class="col-md-8">
+            <form action="/search" method="GET" class="d-flex">
+                <input type="text" name="query" class="form-control me-2" placeholder="검색어를 입력하세요" style="max-width: 400px;">
                 <button type="submit" class="btn btn-primary">검색</button>
             </form>
         </div>
     </div>
-    <!-- 세 번째 행 -->
-    <div class="row mt-4">
-        <div class="col-md-12 text-center">
-            <div id="carouselExample" class="carousel slide" data-bs-ride="carousel">
-                <div class="carousel-inner">
-                    <div class="carousel-item active">
-                        <img src="img/image1.png" class="d-block w-100" alt="Image 1">
-                    </div>
-                    <div class="carousel-item">
-                        <img src="img/image2.png" class="d-block w-100" alt="Image 2">
-                    </div>
-                    <div class="carousel-item">
-                        <img src="img/image3.png" class="d-block w-100" alt="Image 3">
-                    </div>
-                </div>
-                <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
-                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Previous</span>
-                </button>
-                <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
-                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Next</span>
-                </button>
-            </div>
+
+    <!-- 세 번째 행 - 이미지 그리드 -->
+    <div class="row mt-4 category-images">
+        <div class="col-md-4 text-center">
+            <a href="/category/laptop">
+                <img src="/img/노트북.jpg" alt="노트북" class="img-fluid">
+                <div class="category-title">노트북</div>
+            </a>
+        </div>
+        <div class="col-md-4 text-center">
+            <a href="/category/desktop">
+                <img src="/img/데스크탑.jpg" alt="데스크탑" class="img-fluid">
+                <div class="category-title">데스크탑</div>
+            </a>
+        </div>
+        <div class="col-md-4 text-center">
+            <a href="/category/tv">
+                <img src="/img/TV.jpg" alt="TV" class="img-fluid">
+                <div class="category-title">TV</div>
+            </a>
+        </div>
+    </div>
+    <div class="row mt-4 category-images">
+        <div class="col-md-4 text-center">
+            <a href="/category/keyboard">
+                <img src="/img/키보드.jpg" alt="키보드" class="img-fluid">
+                <div class="category-title">키보드</div>
+            </a>
+        </div>
+        <div class="col-md-4 text-center">
+            <a href="/category/galaxy">
+                <img src="/img/갤럭시.jpg" alt="갤럭시" class="img-fluid">
+                <div class="category-title">갤럭시</div>
+            </a>
+        </div>
+        <div class="col-md-4 text-center">
+            <a href="/category/iphone">
+                <img src="/img/아이폰.jpg" alt="아이폰" class="img-fluid">
+                <div class="category-title">아이폰</div>
+            </a>
         </div>
     </div>
 </div>
-
 
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

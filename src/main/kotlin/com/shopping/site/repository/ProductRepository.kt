@@ -4,9 +4,9 @@ import com.shopping.site.dataClass.Product
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
-import org.springframework.data.repository.CrudRepository
 import org.springframework.data.repository.query.Param
 import org.springframework.stereotype.Repository
+
 @Repository
 interface ProductRepository : JpaRepository<Product, Long> {
 
@@ -35,5 +35,16 @@ interface ProductRepository : JpaRepository<Product, Long> {
     @Modifying
     @Query("UPDATE Product p SET p.stock = p.stock + :quantity WHERE p.id = :productId")
     fun increaseStock(@Param("productId") productId: Long, @Param("quantity") quantity: Int): Int
-}
 
+    // 카테고리별로 검색
+    @Query("SELECT p FROM Product p WHERE p.category = :category")
+    fun findByCategory(@Param("category") category: String): List<Product>
+
+    // 카테고리별 가격 오름차순 정렬
+    @Query("SELECT p FROM Product p WHERE p.category = :category ORDER BY p.price ASC")
+    fun findByCategoryOrderByPriceAsc(@Param("category") category: String): List<Product>
+
+    // 카테고리별 가격 내림차순 정렬
+    @Query("SELECT p FROM Product p WHERE p.category = :category ORDER BY p.price DESC")
+    fun findByCategoryOrderByPriceDesc(@Param("category") category: String): List<Product>
+}

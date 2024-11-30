@@ -4,16 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Page</title>
+    <script type="module" src="/static/utils/formatUtils.js"></script>
 </head>
 <body>
 <h1>마이페이지</h1>
-<p>환영합니다, {{userEmail}}님!</p>
-
+<p>환영합니다, {{user.nickname}}님!</p>
+<p>당신의 적립금은 <span id="user-balance">{{user.balance}}</span>원입니다.</p>
 <ul>
     <li><a href="/wishlist">위시리스트 보기</a></li>
     <li><a href="/cart">장바구니 보기</a></li>
     <li><a href="/orders">주문목록 보기</a></li>
     <li><a href="/logout">로그아웃</a></li>
 </ul>
+
+<script type="module">
+    import { formatPricesInDocument } from '/utils/formatUtils.js';
+
+    document.addEventListener("DOMContentLoaded", () => {
+        // 적립금 포맷팅 적용
+        formatPricesInDocument('#user-balance');
+    });
+</script>
 </body>
 </html>

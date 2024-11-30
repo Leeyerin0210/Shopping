@@ -13,4 +13,5 @@ class UserStatusController {
         val userEmail = session.getAttribute("userEmail") as? String
         return mapOf("loggedIn" to (userEmail != null))
     }
+
 }

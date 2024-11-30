@@ -13,13 +13,27 @@ class OrderController(
     private val orderService: OrderService
 ) {
 
-    @PostMapping("/create")
-    fun createOrder(request: HttpServletRequest): ResponseEntity<Map<String, String>> {
+    @PostMapping("/checkout")
+    fun createOrder(
+        @RequestBody body: Map<String, Any>,
+        request: HttpServletRequest
+    ): ResponseEntity<Map<String, String>> {
+        // 사용자 이메일 확인
         val userEmail = request.session.getAttribute("userEmail") as? String
             ?: return ResponseEntity.status(401).body(mapOf("message" to "로그인이 필요합니다."))
 
-        orderService.createOrder(userEmail)
-        return ResponseEntity.ok(mapOf("message" to "주문이 완료되었습니다.", "redirectUrl" to "/orders"))
+        // 요청 본문에서 적립금 및 쿠폰 ID 확인
+        val usedPoints = body["points"]?.toString()?.toIntOrNull() ?: 0
+        val couponId = body["couponId"]?.toString()?.toLongOrNull()
+        println("usedPoints : $usedPoints")
+        println("couponID : $couponId")
+        try {
+            // 주문 생성
+            orderService.createOrder(userEmail, usedPoints, couponId)
+            return ResponseEntity.ok(mapOf("message" to "주문이 완료되었습니다.", "redirectUrl" to "/orders"))
+        } catch (e: Exception) {
+            return ResponseEntity.status(400).body(mapOf("message" to "주문에 실패했습니다."))
+        }
     }
 
     @PostMapping("/{orderId}/pay")

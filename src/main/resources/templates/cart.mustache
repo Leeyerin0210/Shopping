@@ -16,12 +16,6 @@
             margin-bottom: 20px;
         }
 
-        .cart-item img {
-            width: 100px;
-            height: auto;
-            border-radius: 5px;
-        }
-
         .cart-summary {
             background-color: #f1f1f1;
             padding: 20px;
@@ -30,11 +24,26 @@
 
         .cart-summary h5 {
             font-size: 18px;
+            margin-bottom: 15px;
         }
 
         .checkout-btn {
             background-color: #007bff;
             color: white;
+            font-weight: bold;
+        }
+
+        .checkout-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .form-label {
+            font-weight: bold;
+        }
+
+        .coupon-option {
+            font-size: 0.9rem;
+            color: #555;
         }
     </style>
 </head>
@@ -68,7 +77,6 @@
                 </div>
             {{/cartItems}}
 
-            <!-- Empty Cart Message -->
             {{^cartItems}}
                 <div class="alert alert-warning">
                     Your cart is empty. <a href="/search?query=" class="alert-link">Continue shopping</a>.
@@ -83,113 +91,112 @@
                 <hr>
                 <div class="d-flex justify-content-between">
                     <p>Subtotal</p>
-                    <p>₩ {{subtotal}}</p>
+                    <p id="subtotal">₩ {{subtotal}}</p>
                 </div>
                 <div class="d-flex justify-content-between">
                     <p>Shipping</p>
-                    <p>₩ {{shipping}}</p>
+                    <p id="shipping">₩ {{shipping}}</p>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <p>Used Points</p>
+                    <p id="used-points">₩ 0</p>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <p>Coupon Discount</p>
+                    <p id="coupon-discount">₩ 0</p>
                 </div>
                 <hr>
                 <div class="d-flex justify-content-between">
                     <p>Total</p>
-                    <p>₩ {{total}}</p>
+                    <p id="total">₩ {{total}}</p>
                 </div>
-                <button class="btn checkout-btn btn-lg w-100 mt-3" id="checkout-btn">Checkout</button>
-                <script>
-                    document.getElementById('checkout-btn').addEventListener('click', () => {
-                        if (confirm('Do you want to place the order?')) {
-                            fetch('/orders/create', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' }
-                            })
-                                    .then(response => {
-                                        if (!response.ok) {
-                                            throw new Error('Failed to place the order.');
-                                        }
-                                        return response.json();
-                                    })
-                                    .then(data => {
-                                        alert(data.message || 'Order placed successfully!');
-                                        if (data.redirectUrl) {
-                                            location.href = data.redirectUrl;
-                                        }
-                                    })
-                                    .catch(error => {
-                                        console.error('Error:', error);
-                                        alert('An error occurred while placing the order.');
-                                    });
-                        }
-                    });
+                <hr>
 
-                </script>
+                <!-- Use Points -->
+                <div class="mb-3">
+                    <label for="use-points" class="form-label">Use Points</label>
+                    <input type="number" id="use-points" class="form-control" min="0" placeholder="Enter points to use">
+                </div>
+
+                <!-- Select Coupon -->
+                <div class="mb-3">
+                    <label for="coupon-select" class="form-label">Select Coupon</label>
+                    <select id="coupon-select" class="form-control">
+                        <option value="" selected>No Coupon</option>
+                        {{#coupons}}
+                            <option value="{{id}}" class="coupon-option">
+                                {{name}} - {{discount}}원 Off (Expires: {{expiryDate}})
+                            </option>
+                        {{/coupons}}
+                    </select>
+                </div>
+
+                <button class="btn checkout-btn btn-lg w-100 mt-3" id="apply-discounts-btn">Apply Discounts</button>
+                <button class="btn checkout-btn btn-lg w-100 mt-3" id="checkout-btn">Checkout</button>
             </div>
         </div>
     </div>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
 <script>
-    // Remove item event
-    document.querySelectorAll('.remove-btn').forEach(btn => {
-        btn.addEventListener('click', e => {
-            e.preventDefault();
-            const productId = btn.getAttribute('data-product-id');
+    // Apply Discounts Script
+    document.getElementById('apply-discounts-btn').addEventListener('click', async () => {
+        const points = parseInt(document.getElementById('use-points').value) || 0;
+        const couponId = document.getElementById('coupon-select').value || null;
 
-            if (!productId) {
-                alert('Product ID is missing!');
-                return;
-            }
-
-            fetch('/cart/remove', {
+        try {
+            const response = await fetch('/cart/apply-discounts', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ productId })
-            })
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Failed to remove item from cart.');
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        alert(data.message || 'Item removed successfully');
-                        location.reload();
-                    })
-                    .catch(error => console.error('Error:', error));
-        });
+                body: JSON.stringify({ points, couponId })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                document.getElementById('used-points').textContent = `₩ ${data.usedPoints || 0}`;
+                document.getElementById('coupon-discount').textContent = `₩ ${data.couponDiscount || 0}`;
+                document.getElementById('total').textContent = `₩ ${data.discountedTotal || data.total}`;
+                alert(data.message || 'Discounts applied successfully!');
+            } else {
+                alert('Failed to apply discounts.');
+            }
+        } catch (error) {
+            console.error('Error applying discounts:', error);
+            alert('An error occurred while applying discounts.');
+        }
     });
 
-    // Update quantity event
-    document.querySelectorAll('.quantity-input').forEach(input => {
-        input.addEventListener('change', e => {
-            const productId = input.getAttribute('data-product-id');
-            const quantity = parseInt(input.value, 10);
+    // Checkout Script
+    document.getElementById('checkout-btn').addEventListener('click', async () => {
+        const points = parseInt(document.getElementById('use-points').value) || 0;
+        const couponId = document.getElementById('coupon-select').value || null;
 
-            if (quantity <= 0 || isNaN(quantity)) {
-                alert('Quantity must be a positive number!');
-                input.value = 1; // Reset to 1 if invalid
-                return;
+        if (confirm('Do you want to place the order?')) {
+            try {
+                const response = await fetch('/orders/checkout', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ points, couponId })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    alert(data.message || 'Order placed successfully.');
+                    if (data.rewardPoints) {
+                        alert(`You earned {data.rewardPoints}원 points!`);
+                    }
+                    location.href = '/orders';
+                } else {
+                    const errorData = await response.json();
+                    alert(errorData.message || 'Failed to place the order.');
+                }
+            } catch (error) {
+                console.error('Error placing order:', error);
+                alert('An error occurred while placing the order.');
             }
-
-            fetch('/cart/update', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ productId, quantity })
-            })
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Failed to update cart.');
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        if (data.message) {
-                            alert(data.message);
-                        }
-                        location.reload();
-                    })
-                    .catch(error => console.error('Error:', error));
-        });
+        }
     });
 </script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

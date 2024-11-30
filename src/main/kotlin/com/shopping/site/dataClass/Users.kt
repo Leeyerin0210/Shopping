@@ -12,6 +12,7 @@ data class User(
     val nickname: String = "",
     val password: String = "",
     val address : String = "",
+    var balance: Double = 0.0,
 
 ) {
     constructor() : this(

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Review Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        .review {
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            background-color: #fffbe6; /* 베이지 톤 배경 */
+        }
+        .comment {
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background-color: #f9f9f9;
+        }
+        .add-comment-form textarea {
+            width: 100%;
+            height: 100px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+        }
+        .add-comment-form button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .add-comment-form button:hover {
+            background-color: #0056b3;
+        }
+        h2 {
+            margin-top: 30px;
+        }
+        .button-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .btn {
+            padding: 10px 20px;
+            border-radius: 5px;
+            border: none;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+        }
+        .btn-review {
+            background-color: #007bff; /* 파란색 */
+        }
+        .btn-review:hover {
+            background-color: #0056b3;
+        }
+        .btn-product {
+            background-color: #28a745; /* 초록색 */
+        }
+        .btn-product:hover {
+            background-color: #1e7e34;
+        }
+    </style>
+</head>
+<body>
+<div class="review">
+    <h1>{{review.title}}</h1>
+    <p>{{review.review}}</p>
+    <p><strong>Rating:</strong> {{review.rating}}/5</p>
+    <p><strong>By:</strong> {{review.user.nickname}}</p> <!-- 닉네임 표시 -->
+</div>
+
+<div class="button-container">
+    <a href="/reviews/{{review.product.id}}/write" class="btn btn-review">Write a Review</a>
+    <a href="/products/{{review.product.id}}" class="btn btn-product">Back to Product</a>
+</div>
+
+<h2>Comments</h2>
+{{#comments}}
+    <div class="comment">
+        <p><strong>{{user.nickname}}:</strong> {{content}}</p> <!-- 닉네임 표시 -->
+    </div>
+{{/comments}}
+{{^comments}}
+    <p>No comments yet.</p>
+{{/comments}}
+
+<h2>Add a Comment</h2>
+<form action="/reviews/{{review.id}}/comments" method="POST" class="add-comment-form">
+    <textarea name="content" placeholder="Write your comment here..." required></textarea>
+    <button type="submit">Submit Comment</button>
+</form>
+</body>
+</html>

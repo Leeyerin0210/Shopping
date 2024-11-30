@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -26,7 +26,7 @@
         }
         .stock {
             font-size: 1rem;
-            color: #28a745; /* 녹색으로 표시 */
+            color: #28a745;
             margin-bottom: 20px;
         }
         .buttons-container {
@@ -86,16 +86,14 @@
 </head>
 <body>
 <h1>{{product.name}}</h1>
-<p class="price">₩{{product.price}}</p>
-<p class="stock">재고 수량: {{product.stock}}</p> <!-- 재고 수량 표시 -->
+<p class="price product-price" data-price="{{product.price}}"></p>
+<p class="stock" data-stock="{{product.stock}}">재고: {{product.stock}}개</p>
 
 <div class="buttons-container">
     <button class="btn btn-wishlist" onclick="handleAction('wishlist', {{product.id}})">위시리스트 추가</button>
     <button class="btn btn-cart" onclick="handleAction('cart', {{product.id}})">장바구니 추가</button>
 </div>
 
-
-<!-- 리뷰 보기 버튼 추가 -->
 <div style="margin: 20px 0;">
     <button class="btn btn-secondary" onclick="goToReviews({{product.id}})">리뷰 보기</button>
 </div>
@@ -113,6 +111,35 @@
 <a href="javascript:history.back()">← 돌아가기</a>
 
 <script>
+    // 가격에 쉼표를 추가하고 소수점을 제거하는 함수
+    function formatPricesInDocument(selector) {
+        const elements = document.querySelectorAll(selector);
+        elements.forEach(el => {
+            const value = parseFloat(el.dataset.price || el.textContent.replace('₩', '').replace(/,/g, ''));
+            if (!isNaN(value)) {
+                el.textContent = `₩${Math.round(value).toLocaleString('ko-KR')}`;
+            }
+        });
+    }
+
+    // 재고 형식 유지 (재고: n개)
+    function formatStock(selector) {
+        const elements = document.querySelectorAll(selector);
+        elements.forEach(el => {
+            const stock = parseInt(el.dataset.stock, 10);
+            if (!isNaN(stock)) {
+                el.textContent = `재고: ${stock}개`;
+            }
+        });
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        // 가격 형식화
+        formatPricesInDocument('.product-price');
+        // 재고 형식 유지
+        formatStock('.stock');
+    });
+
     async function handleAction(action, productId) {
         const actionText = action === 'wishlist' ? '위시리스트' : '장바구니';
 
@@ -158,69 +185,8 @@
         return false;
     }
 
-    // 리뷰 보기로 이동
     function goToReviews(productId) {
         window.location.href = `/reviews/${productId}`;
-    }
-</script>
-<div class="images-container">
-    {{#images}}
-        <img src="{{.}}" alt="Product image">
-    {{/images}}
-
-    {{^images}}
-        <p class="no-images">사진이 없습니다.</p>
-    {{/images}}
-</div>
-
-<a href="javascript:history.back()">← 돌아가기</a>
-
-<script>
-    async function handleAction(action, productId) {
-        const actionText = action === 'wishlist' ? '위시리스트' : '장바구니';
-
-        // 로그인 상태 확인
-        const isLoggedIn = await checkLoginStatus();
-        if (!isLoggedIn) {
-            if (confirm("로그인이 필요합니다. 로그인하시겠습니까?")) {
-                window.location.href = "/login";
-                return;
-            } else {
-                return; // 로그인 거부 시 종료
-            }
-        }
-
-        // 로그인 상태면 서버에 제품 추가 요청
-        const response = await fetch(`/api/${action}/add`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ productId })
-        });
-
-        if (response.ok) {
-            const userResponse = confirm(`${actionText}에 추가되었습니다. 이동하시겠습니까?`);
-            if (userResponse) {
-                const redirectUrl = action === 'wishlist' ? '/wishlist' : '/cart';
-                window.location.href = redirectUrl;
-            }
-        } else {
-            alert(`${actionText} 추가에 실패했습니다. 다시 시도해주세요.`);
-        }
-    }
-
-    async function checkLoginStatus() {
-        try {
-            const response = await fetch("/api/check-login-status", { method: "GET" });
-            if (response.ok) {
-                const data = await response.json();
-                return data.loggedIn;
-            }
-        } catch (error) {
-            console.error("Error checking login status:", error);
-        }
-        return false; // 로그인 상태가 확인되지 않으면 false 반환
     }
 </script>
 </body>

@@ -71,19 +71,7 @@
             color: #555;
         }
     </style>
-    <script>
-        // 가격에 쉼표 추가하는 함수
-        function formatPrice() {
-            const prices = document.querySelectorAll('.product-price');
-            prices.forEach(price => {
-                const value = parseFloat(price.textContent.replace('₩', '').replace(/,/g, ''));
-                if (!isNaN(value)) {
-                    price.textContent = `₩${value.toLocaleString('ko-KR')}`;
-                }
-            });
-        }
-        document.addEventListener("DOMContentLoaded", formatPrice);
-    </script>
+    <script type="module" src="/utils/formatUtils.js"></script>
 </head>
 <body>
 <div class="container">
@@ -108,5 +96,13 @@
         {{/products}}
     </ul>
 </div>
+
+<script type="module">
+    import { formatPricesInDocument } from '/utils/formatUtils.js';
+
+    document.addEventListener("DOMContentLoaded", () => {
+        formatPricesInDocument('.product-price');
+    });
+</script>
 </body>
 </html>

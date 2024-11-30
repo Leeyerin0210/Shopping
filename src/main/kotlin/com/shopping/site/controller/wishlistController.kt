@@ -8,12 +8,6 @@ import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.*
 
-@Controller
-@RequestMapping("/wishlist")
-class WishlistController(
-    private val wishlistService: WishlistService,
-    private val wishlistRepository: WishlistRepository
-) {
 
     @Controller
     @RequestMapping("/wishlist")
@@ -25,8 +19,11 @@ class WishlistController(
         @GetMapping
         fun showWishlist(request: HttpServletRequest, model: Model): String {
             val userEmail = request.session.getAttribute("userEmail") as? String
-                ?: return "redirect:/login"
-
+                ?: run {
+                    // 세션에 현재 URL 저장
+                    request.session.setAttribute("redirectAfterLogin", "/wishlist")
+                    return "redirect:/login"
+                }
             val wishlist = wishlistService.getWishlist(userEmail)
             model.addAttribute("wishlist", wishlist)
             return "wishlist"
@@ -53,4 +50,3 @@ class WishlistController(
     }
 
 
-}

@@ -67,8 +67,8 @@ class LoginController(
         val session = request.session
         val userEmail = session.getAttribute("userEmail") as? String
             ?: return "redirect:/login" // 로그인되지 않은 경우 로그인 페이지로 리다이렉트
-
-        model.addAttribute("userEmail", userEmail)
+        val user = userRepository.findByEmail(userEmail)
+        model.addAttribute("user", user)
         return "mypage" // 마이페이지 템플릿
     }
 }

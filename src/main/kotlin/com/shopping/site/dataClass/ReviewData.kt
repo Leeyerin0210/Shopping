@@ -10,6 +10,9 @@ data class ReviewData(
     val id: Long = 0,
 
     @Column(nullable = false, columnDefinition = "TEXT")
+    val title: String = "",
+
+    @Column(nullable = false, columnDefinition = "TEXT")
     val review: String = "",
 
     @Column
@@ -19,7 +22,7 @@ data class ReviewData(
     @JoinColumn(name = "product_id", nullable = false)
     val product: Product? = null,
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", referencedColumnName = "email", nullable = false)
     val user: User? = null
 )

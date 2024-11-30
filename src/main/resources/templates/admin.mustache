@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 30px;
+            text-align: center;
+            color: #343a40;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .admin-btn {
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            color: white;
+        }
+
+        .order-btn {
+            background-color: #007bff;
+        }
+
+        .order-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .coupon-btn {
+            background-color: #28a745;
+        }
+
+        .coupon-btn:hover {
+            background-color: #1e7e34;
+        }
+
+        .support-btn {
+            background-color: #ffc107;
+            color: black;
+        }
+
+        .support-btn:hover {
+            background-color: #e0a800;
+        }
+    </style>
+</head>
+<body>
+<h1>관리자 사이트</h1>
+
+<div class="button-container">
+    <button class="admin-btn order-btn" onclick="location.href='/admin/orders'">주문 처리</button>
+    <button class="admin-btn coupon-btn" onclick="location.href='/admin/coupons'">쿠폰 관리</button>
+    <button class="admin-btn support-btn" onclick="location.href='/admin/support'">상담 처리</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

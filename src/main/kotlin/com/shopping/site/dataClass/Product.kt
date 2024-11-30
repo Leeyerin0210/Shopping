@@ -22,13 +22,17 @@ data class Product(
     @Column(nullable = false, columnDefinition = "TEXT",name = "Detail_Imgs")
     val images: String = "[]",
     @Column(nullable = false)
-    var stock: Int
+    var stock: Int,
+    @Column(name = "category", nullable = false) // 필드 매핑 확인
+    val category: String,
+
 ) {
     constructor() : this(
         id = 0,
         name = "",
         price = BigDecimal.ZERO,
         images = "[]",
-        stock = 100
+        stock = 100,
+        category = ""
     )
 }
