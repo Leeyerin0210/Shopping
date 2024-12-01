@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1:1 문의 수정</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        h3 {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        input, textarea, select, button {
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .cancel-btn {
+            background-color: #ccc;
+            color: #333;
+        }
+
+        .cancel-btn:hover {
+            background-color: #aaa;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h3>1:1 문의 수정</h3>
+    <form action="/support/update/{{id}}" method="POST">
+        <label for="title">제목</label>
+        <input type="text" id="title" name="title" value="{{title}}" required>
+
+        <label for="category">카테고리</label>
+        <select id="category" name="category">
+            <option value="배송문의" {{#isDelivery}}selected{{/isDelivery}}>배송문의</option>
+            <option value="교환문의" {{#isExchange}}selected{{/isExchange}}>교환문의</option>
+            <option value="상품문의" {{#isProduct}}selected{{/isProduct}}>상품문의</option>
+        </select>
+
+        <label for="message">문의 내용</label>
+        <textarea id="message" name="message" rows="5" required>{{message}}</textarea>
+
+        <label>
+            <input type="checkbox" name="isSecret" {{#isSecret}}checked{{/isSecret}}> 비밀글로 설정
+        </label>
+
+        <button type="submit">수정</button>
+        <button type="button" class="cancel-btn" onclick="location.href='/support/all'">취소</button>
+    </form>
+</div>
+</body>
+</html>

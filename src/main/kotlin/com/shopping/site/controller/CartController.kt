@@ -2,6 +2,7 @@ package com.shopping.site.controller
 
 import com.shopping.site.Service.CartService
 import com.shopping.site.repository.CouponRepository
+import com.shopping.site.repository.ProductRepository
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
@@ -10,8 +11,6 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
 import java.math.BigDecimal
 import java.time.LocalDate
 
@@ -20,6 +19,7 @@ import java.time.LocalDate
 class CartController(
     private val cartService: CartService,
     private val couponRepository: CouponRepository,
+    private val productRepository: ProductRepository,
 ) {
 
     @GetMapping
@@ -65,7 +65,7 @@ class CartController(
                 if (coupon.user?.email != userEmail) throw IllegalArgumentException("Coupon does not belong to the user")
                 if (coupon.expiryDate.isBefore(LocalDate.now())) throw IllegalArgumentException("Coupon has expired")
 
-                val couponDiscount = coupon.discount
+                coupon.discount.toInt()
             } else {
                 BigDecimal.ZERO
             }
@@ -97,6 +97,7 @@ class CartController(
         cartService.removeFromCart(userEmail, productId)
         return ResponseEntity.ok(mapOf("message" to "Item removed successfully"))
     }
+
     @PostMapping("/update")
     fun updateItemQuantity(
         @RequestBody body: Map<String, Any>,
@@ -108,28 +109,22 @@ class CartController(
             ?: throw IllegalArgumentException("Missing or invalid quantity")
         val userEmail = request.session.getAttribute("userEmail") as? String
             ?: return ResponseEntity.badRequest().body(mapOf("message" to "User not logged in"))
-
+        val product = productRepository.searchById(productId)
+            ?: throw IllegalArgumentException("Missing or invalid productId")
+        if(product.stock<quantity){
+            return ResponseEntity.badRequest().body(
+                mapOf(
+                    "message" to "갯수는 재고를 초과하여 담으실 수 없습니다.",
+                )
+            )
+        }
         // 수량 업데이트
         cartService.updateCartItemQuantity(userEmail, productId, quantity)
-
-        // 변경된 가격 정보 가져오기
-        val updatedCartItems = cartService.getCartItems(userEmail)
-        val updatedSubtotal = cartService.calculateSubtotal(updatedCartItems)
-        val shipping = BigDecimal("4000")
-        val updatedTotal = updatedSubtotal + shipping
-
-        // 업데이트된 상품의 총 가격 계산
-        val updatedProductPrice = updatedCartItems.find { it.product.id == productId }?.let {
-            it.product.price * BigDecimal(it.quantity)
-        } ?: BigDecimal.ZERO
 
         // BigDecimal을 문자열로 변환하여 JSON 호환성 유지
         return ResponseEntity.ok(
             mapOf(
                 "message" to "Quantity updated successfully",
-                "subtotal" to updatedSubtotal.toPlainString(),
-                "total" to updatedTotal.toPlainString(),
-                "productPrice" to updatedProductPrice.toPlainString()
             )
         )
     }

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1:1 문의사항</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+
+        table th, table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        table th {
+            background-color: #f4f4f4;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .category {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .new-label {
+            display: inline-block;
+            background-color: #ff6f61;
+            color: white;
+            padding: 2px 6px;
+            font-size: 12px;
+            border-radius: 3px;
+            margin-left: 5px;
+        }
+
+        .lock-icon {
+            color: #999;
+            font-size: 12px;
+            margin-right: 5px;
+        }
+
+        .title-link {
+            color: #666;
+            text-decoration: none;
+        }
+
+        .title-link:hover {
+            text-decoration: underline;
+        }
+
+        .secret {
+            color: #999;
+        }
+
+        .username {
+            color: #666;
+        }
+
+        .date {
+            color: #999;
+        }
+
+        .dropdown {
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+
+        select {
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>1:1 문의사항</h1>
+
+    <!-- Dropdown Filters -->
+    <div class="dropdown">
+        <label for="filter-category">카테고리: </label>
+        <select id="filter-category">
+            <option value="all">전체</option>
+            <option value="배송문의">배송문의</option>
+            <option value="교환문의">교환문의</option>
+            <option value="상품문의">상품문의</option>
+        </select>
+        <!-- 작성하기 버튼 -->
+        <button id="write-button" onclick="location.href='/support/write'" style="float: right; padding: 8px 12px; border: none; background-color: #007bff; color: white; border-radius: 4px; cursor: pointer;">
+            작성하기
+        </button>
+    </div>
+
+    <div class="table-container">
+        <table>
+            <thead>
+            <tr>
+                <th>번호</th>
+                <th>제목</th>
+                <th>카테고리</th>
+                <th>작성자</th>
+                <th>작성일</th>
+            </tr>
+            </thead>
+            <tbody>
+            {{#tickets}}
+                <tr>
+                    <td>{{id}}</td>
+                    <td>
+                        {{#isSecret}}
+                            <span class="lock-icon">🔒</span>
+                        {{/isSecret}}
+                        <a href="{{#isSecret}}{{restrictedUrl}}{{/isSecret}}{{^isSecret}}{{url}}{{/isSecret}}"
+                           class="title-link">
+                            {{title}}
+                        </a>
+                        {{#isNew}}
+                            <span class="new-label">NEW</span>
+                        {{/isNew}}
+                    </td>
+                    <td class="category">{{category}}</td>
+                    <td class="username">{{maskedUsername}}</td>
+                    <td class="date">{{createdAt}}</td>
+                </tr>
+            {{/tickets}}
+            {{^tickets}}
+                <tr>
+                    <td colspan="6" style="text-align: center; color: #999;">등록된 문의가 없습니다.</td>
+                </tr>
+            {{/tickets}}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    // URL에서 쿼리 매개변수를 추출하는 함수
+    function getQueryParam(param) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(param);
+    }
+
+    // 'error' 쿼리 매개변수 확인
+    const error = getQueryParam('error');
+    if (error === 'unauthorized') {
+        alert('권한이 없습니다.');
+    }
+</script>
+</body>
+</html>

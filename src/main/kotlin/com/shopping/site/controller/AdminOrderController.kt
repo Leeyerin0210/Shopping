@@ -19,12 +19,8 @@ class AdminOrderController(
     // AdminOrderController 수정
     @GetMapping
     fun getAllOrders(request: HttpServletRequest, model: Model): String {
-        val userEmail = request.session.getAttribute("userEmail") as? String
-            ?: run {
-                // 세션에 현재 URL 저장
-                request.session.setAttribute("redirectAfterLogin", "/admin/orders")
-                return "redirect:/login"
-            }
+        val adminEmail = request.session.getAttribute("adminEmail") as? String
+            ?: return "redirect:/admin/login"
         // 주문 목록을 가져오면서 상태별 버튼 표시 여부 추가
         val orders = orderService.getAllOrders().map { order ->
             mapOf(

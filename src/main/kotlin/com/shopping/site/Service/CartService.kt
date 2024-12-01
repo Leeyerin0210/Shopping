@@ -84,8 +84,7 @@ class CartService(
                 throw IllegalArgumentException("Coupon has expired")
             }
 
-            val discountAmount = subtotal * (coupon.discount.toBigDecimal() / BigDecimal("100"))
-            total -= discountAmount
+            total -= coupon.discount.toBigDecimal()
             if (total < BigDecimal.ZERO) {
                 total = BigDecimal.ZERO // 총액은 0 이하가 될 수 없음
             }

@@ -45,6 +45,21 @@
             font-size: 0.9rem;
             color: #555;
         }
+
+        .text-end h5 {
+            display: inline-block;
+            margin: 0;
+            line-height: 1.5;
+            vertical-align: middle;
+        }
+
+        .product-price span {
+            white-space: nowrap;
+        }
+
+        .product-price .price-number {
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -68,7 +83,9 @@
                             </p>
                         </div>
                         <div class="text-end">
-                            <h5>₩ {{product.price}}</h5>
+                            <h5 class="product-price" data-price="{{product.price}}">
+                                <span>₩ <span class="price-number">{{product.price}}</span></span>
+                            </h5>
                             <button class="btn btn-outline-danger btn-sm remove-btn" data-product-id="{{product.id}}">
                                 Remove
                             </button>
@@ -139,6 +156,25 @@
 </div>
 
 <script>
+    // 숫자를 쉼표를 추가하고 소수점을 없애는 포맷팅 함수
+    function formatPrice(price) {
+        return Math.floor(price).toLocaleString('ko-KR');
+    }
+
+    // 페이지 로드 시 모든 상품 가격 포맷팅
+    window.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.product-price').forEach((element) => {
+            const originalPrice = parseFloat(element.getAttribute('data-price'));
+            const formattedPrice = formatPrice(originalPrice);
+            element.innerHTML = `<span>₩ <span class="price-number">${formattedPrice}</span></span>`;
+        });
+
+        // Order summary 초기값 포맷팅
+        document.getElementById('subtotal').textContent = `₩ ${formatPrice({{subtotal}})}`;
+        document.getElementById('shipping').textContent = `₩ ${formatPrice({{shipping}})}`;
+        document.getElementById('total').textContent = `₩ ${formatPrice({{total}})}`;
+    });
+
     // Apply Discounts Script
     document.getElementById('apply-discounts-btn').addEventListener('click', async () => {
         const points = parseInt(document.getElementById('use-points').value) || 0;
@@ -153,9 +189,9 @@
 
             if (response.ok) {
                 const data = await response.json();
-                document.getElementById('used-points').textContent = `₩ ${data.usedPoints || 0}`;
-                document.getElementById('coupon-discount').textContent = `₩ ${data.couponDiscount || 0}`;
-                document.getElementById('total').textContent = `₩ ${data.discountedTotal || data.total}`;
+                document.getElementById('used-points').textContent = `₩ ${formatPrice(data.usedPoints || 0)}`;
+                document.getElementById('coupon-discount').textContent = `₩ ${formatPrice(data.couponDiscount || 0)}`;
+                document.getElementById('total').textContent = `₩ ${formatPrice(data.discountedTotal || data.total)}`;
                 alert(data.message || 'Discounts applied successfully!');
             } else {
                 alert('Failed to apply discounts.');
@@ -165,6 +201,65 @@
             alert('An error occurred while applying discounts.');
         }
     });
+    // 수량 변경 시 가격 업데이트
+    document.querySelectorAll('.quantity-input').forEach((input) => {
+        input.addEventListener('change', async (event) => {
+            const productId = event.target.getAttribute('data-product-id');
+            const newQuantity = parseInt(event.target.value);
+
+            if (newQuantity < 1) {
+                alert('Quantity cannot be less than 1.');
+                event.target.value = 1;
+                return;
+            }
+
+            try {
+                const response = await fetch('/cart/update', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ productId, quantity: newQuantity })
+                });
+
+                if (response.ok) {
+                    location.reload(); // 페이지를 다시 로드
+                } else {
+                    const errorData = await response.json();
+                    alert(errorData.message);
+                    location.reload();
+                }
+            } catch (error) {
+                console.error('Error updating quantity:', error);
+                alert('An error occurred while updating the quantity.');
+            }
+        });
+    });
+    // 항목 삭제
+    document.querySelectorAll('.remove-btn').forEach((button) => {
+        button.addEventListener('click', async (event) => {
+            const productId = event.target.getAttribute('data-product-id');
+
+            if (!confirm('Are you sure you want to remove this item?')) return;
+
+            try {
+                const response = await fetch('/cart/remove', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ productId })
+                });
+
+                if (response.ok) {
+                    alert('Item successfully removed.');
+                    location.reload(); // 페이지를 다시 로드
+                } else {
+                    alert('Failed to remove the item.');
+                }
+            } catch (error) {
+                console.error('Error removing item:', error);
+                alert('An error occurred while removing the item.');
+            }
+        });
+    });
+
 
     // Checkout Script
     document.getElementById('checkout-btn').addEventListener('click', async () => {
@@ -183,7 +278,7 @@
                     const data = await response.json();
                     alert(data.message || 'Order placed successfully.');
                     if (data.rewardPoints) {
-                        alert(`You earned {data.rewardPoints}원 points!`);
+                        alert(`You earned ${formatPrice(data.rewardPoints)}원 points!`);
                     }
                     location.href = '/orders';
                 } else {

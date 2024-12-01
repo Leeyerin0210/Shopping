@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>문의사항 관리</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        table th, table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        table th {
+            background-color: #f4f4f4;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .reply-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .reply-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .lock-icon {
+            color: #999;
+            font-size: 12px;
+            margin-right: 5px;
+        }
+
+        .reply-section {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+
+        .reply-section textarea {
+            width: 100%;
+            height: 100px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+
+        .reply-section button {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .reply-section button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>문의사항 관리</h1>
+    <table>
+        <thead>
+        <tr>
+            <th>번호</th>
+            <th>제목</th>
+            <th>작성자</th>
+            <th>작성일</th>
+            <th>답변 상태</th>
+            <th>관리</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{#tickets}}
+            <tr>
+                <td>{{id}}</td>
+                <td>
+                    {{#isSecret}}
+                        <span class="lock-icon">🔒</span>
+                    {{/isSecret}}
+                    {{title}}
+                </td>
+                <td>{{maskedUsername}}</td>
+                <td>{{createdAt}}</td>
+                <td>
+                    {{#hasReply}}답변 완료{{/hasReply}}
+                    {{^hasReply}}미답변{{/hasReply}}
+                </td>
+                <td>
+                    <button class="reply-btn" onclick="showReplySection({{id}}, '{{title}}')">답글 작성</button>
+                </td>
+            </tr>
+        {{/tickets}}
+        {{^tickets}}
+            <tr>
+                <td colspan="6" style="text-align: center; color: #999;">등록된 문의가 없습니다.</td>
+            </tr>
+        {{/tickets}}
+        </tbody>
+    </table>
+
+    <!-- 답글 작성 섹션 -->
+    <div id="reply-section" class="reply-section" style="display: none;">
+        <h3>답글 작성</h3>
+        <p id="reply-title"></p>
+        <textarea id="reply-content" placeholder="답변 내용을 입력하세요"></textarea>
+        <button onclick="submitReply()">답글 저장</button>
+        <button onclick="hideReplySection()" style="background-color: #ccc; color: #333;">취소</button>
+    </div>
+</div>
+
+<script>
+    let currentTicketId = null;
+
+    function showReplySection(id, title) {
+        currentTicketId = id;
+        document.getElementById('reply-title').textContent = `문의 제목: ${title}`;
+        document.getElementById('reply-section').style.display = 'block';
+    }
+
+    function hideReplySection() {
+        currentTicketId = null;
+        document.getElementById('reply-title').textContent = '';
+        document.getElementById('reply-content').value = '';
+        document.getElementById('reply-section').style.display = 'none';
+    }
+
+    async function submitReply() {
+        const content = document.getElementById('reply-content').value.trim();
+
+        if (!content) {
+            alert('답변 내용을 입력하세요.');
+            return;
+        }
+
+        try {
+            const response = await fetch(`/admin/support/reply/${currentTicketId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ content })
+            });
+
+            if (response.ok) {
+                alert('답변이 저장되었습니다.');
+                location.reload(); // 페이지 새로고침
+            } else {
+                alert('답변 저장 중 문제가 발생했습니다.');
+            }
+        } catch (error) {
+            console.error('Error submitting reply:', error);
+            alert('답변 저장 중 문제가 발생했습니다.');
+        }
+    }
+</script>
+</body>
+</html>

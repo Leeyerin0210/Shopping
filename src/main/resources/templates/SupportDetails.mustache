@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1:1 문의 상세</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        h3 {
+            margin-bottom: 15px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .meta-info {
+            font-size: 14px;
+            color: #777;
+            margin-bottom: 20px;
+        }
+
+        .content-section, .reply-section {
+            margin-top: 20px;
+            line-height: 1.5;
+            color: #333;
+        }
+
+        .content-section p, .reply-section p {
+            margin: 10px 0;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 30px;
+        }
+
+        .button-group button {
+            padding: 10px 20px;
+            margin-left: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .button-group .delete-btn {
+            background-color: #ff6f61;
+            color: white;
+        }
+
+        .button-group .edit-btn {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .button-group .list-btn {
+            background-color: #ccc;
+            color: #333;
+        }
+
+        .button-group .delete-btn:hover {
+            background-color: #d9534f;
+        }
+
+        .button-group .edit-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .button-group .list-btn:hover {
+            background-color: #aaa;
+        }
+
+        .divider {
+            border-bottom: 1px solid #ddd;
+            margin: 20px 0;
+        }
+
+        .reply-section {
+            background-color: #f4f4f4;
+            padding: 15px;
+            border-radius: 5px;
+        }
+
+        .reply-section strong {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .reply-section p {
+            margin: 0;
+            font-size: 14px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>1:1 문의사항</h1>
+    <h3>{{title}}</h3>
+    <p class="meta-info">
+        작성자: {{maskedUsername}} <br>
+        작성일: {{createdAt}}
+    </p>
+
+    <div class="divider"></div>
+
+    <div class="content-section">
+        <p><strong>문의 내용:</strong></p>
+        <p>{{message}}</p>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="reply-section">
+        <strong>답변:</strong>
+        {{#hasReply}}
+            <p>{{reply}}</p>
+        {{/hasReply}}
+        {{^hasReply}}
+            <p style="color: #999;">아직 답변이 작성되지 않았습니다.</p>
+        {{/hasReply}}
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="button-group">
+        <button class="list-btn" onclick="location.href='/support/all'">목록</button>
+        <button class="edit-btn" onclick="location.href='/support/edit/{{id}}'">수정</button>
+        <button class="delete-btn" onclick="deleteTicket({{id}})">삭제</button>
+    </div>
+</div>
+
+<script>
+    function deleteTicket(id) {
+        if (confirm('정말 삭제하시겠습니까?')) {
+            fetch(`/support/delete/${id}`, {
+                method: 'DELETE'
+            }).then(response => {
+                if (response.ok) {
+                    alert('문의가 삭제되었습니다.');
+                    window.location.href = '/support/all';
+                } else {
+                    alert('삭제 중 문제가 발생했습니다.');
+                }
+            });
+        }
+    }
+</script>
+</body>
+</html>

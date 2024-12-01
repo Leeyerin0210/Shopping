@@ -61,7 +61,9 @@ class OrderService(
             val coupon = couponRepository.findById(couponId)
                 .orElseThrow { IllegalArgumentException("Invalid coupon") }
             if (coupon.user?.email != userEmail) throw IllegalArgumentException("Coupon does not belong to the user")
+
             totalPrice -= coupon.discount.toBigDecimal()
+
         }
 
         if (totalPrice < BigDecimal.ZERO) totalPrice = BigDecimal.ZERO
@@ -92,7 +94,9 @@ class OrderService(
         user.balance -= usedPoints
         user.balance += (totalPrice * BigDecimal("0.1")).toInt() // 총 금액의 10% 적립
         userRepository.save(user)
-
+        if(couponId!=null){
+            couponRepository.deleteById(couponId)
+        }
         // 장바구니 비우기
         cartRepository.deleteAllByUser_Email(userEmail)
 

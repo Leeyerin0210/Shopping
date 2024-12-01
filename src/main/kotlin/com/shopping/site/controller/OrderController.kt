@@ -1,6 +1,7 @@
 package com.shopping.site.controller
 
 import com.shopping.site.Service.OrderService
+import com.shopping.site.Service.UserService
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
@@ -10,7 +11,8 @@ import org.springframework.web.bind.annotation.*
 @Controller
 @RequestMapping("/orders")
 class OrderController(
-    private val orderService: OrderService
+    private val orderService: OrderService,
+    private val userService: UserService
 ) {
 
     @PostMapping("/checkout")

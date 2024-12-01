@@ -16,20 +16,6 @@ class CouponController(
     private val couponService: CouponService
 ) {
 
-    // 사용자 전용 쿠폰 페이지
-    @GetMapping
-    fun getUserCoupons(request: HttpServletRequest, model: Model): String {
-        val userEmail = request.session.getAttribute("userEmail") as? String
-            ?: run {
-                request.session.setAttribute("redirectAfterLogin", "/coupons")
-                return "redirect:/login"
-            }
-
-        val coupons = couponService.getCouponsByUser(userEmail)
-        model.addAttribute("coupons", coupons)
-        return "user-coupons"
-    }
-
     // 관리자용 쿠폰 목록 조회
     @GetMapping("/all")
     fun getAllCoupons(): ResponseEntity<List<Coupon>> {
